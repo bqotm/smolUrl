@@ -1,6 +1,7 @@
 package com.smolURL.smol.controller;
 
 
+import com.smolURL.smol.dto.UrlRequest;
 import com.smolURL.smol.entities.UrlMapping;
 import com.smolURL.smol.service.UrlService;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,8 @@ public class UrlController {
     }
 
     @PostMapping
-    public UrlMapping createUrlMapping(@RequestBody String originalUrl){
-        return urlService.createUrlMapping(originalUrl);
+    public UrlMapping createUrlMapping(@RequestBody UrlRequest urlRequest){
+        return urlService.createUrlMapping(urlRequest);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.smolURL.smol.service;
 
 
+import com.smolURL.smol.dto.UrlRequest;
 import com.smolURL.smol.entities.UrlMapping;
 import com.smolURL.smol.repository.UrlRepository;
 import lombok.AllArgsConstructor;
@@ -22,25 +23,31 @@ public class UrlService {
         return urlRepository.findAll();
     }
 
-    public UrlMapping createUrlMapping(String originalUrl) {
+    public UrlMapping createUrlMapping(UrlRequest urlRequest) {
 
         try {
             MessageDigest md = MessageDigest.getInstance("MD5"); //converts longUrl to a byte array(size=16)
-
-            byte[] messageDigest = md.digest(originalUrl.getBytes());  //16bytes array
-
-
-            BigInteger no = new BigInteger(1, messageDigest); //converting the byte array into BigInteger
-
-            String bin_num = no.toString(2); //converting Biginteger into a BinaryString
-            long num = getLONG(bin_num); //converting First 36 bits of the BinaryString(128bit) to Long
+            String originalUrl=urlRequest.getOriginalUrl();
+            UrlMapping urlMapping;
+            if(urlRequest.getCustomXsUrl()!=null){
+                 urlMapping = new UrlMapping(urlRequest.getCustomXsUrl(), originalUrl, LocalDateTime.now(), LocalDateTime.now().plusYears(2));
+            } else {
+                byte[] messageDigest = md.digest(originalUrl.getBytes());  //16bytes array
 
 
-            String hashtext = getbase62(num); //converting Long to base62 (tinyUrl)
-            while (hashtext.length() < 6) {
-                hashtext = "0" + hashtext;
+                BigInteger no = new BigInteger(1, messageDigest); //converting the byte array into BigInteger
+
+                String bin_num = no.toString(2); //converting Biginteger into a BinaryString
+                long num = getLONG(bin_num); //converting First 36 bits of the BinaryString(128bit) to Long
+
+
+                String hashtext = getbase62(num); //converting Long to base62 (tinyUrl)
+                while (hashtext.length() < 6) {
+                    hashtext = "0" + hashtext;
+                }
+                urlMapping = new UrlMapping(hashtext, originalUrl, LocalDateTime.now(), LocalDateTime.now().plusYears(2));
             }
-            UrlMapping urlMapping = new UrlMapping(hashtext, originalUrl, LocalDateTime.now(), LocalDateTime.now().plusYears(2));
+            urlRepository.insert(urlMapping);
             return urlMapping;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
