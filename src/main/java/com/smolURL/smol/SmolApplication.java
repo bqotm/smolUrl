@@ -16,6 +16,7 @@ public class SmolApplication {
 		SpringApplication.run(SmolApplication.class, args);
 	}
 
+	/*
 	@Bean
 	CommandLineRunner runner(UrlRepository urlRepository){
 		return args->{
@@ -23,5 +24,7 @@ public class SmolApplication {
 			urlRepository.insert(urlMapping);
 		};
 	}
+
+	 */
 
 }
